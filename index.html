@@ -4,160 +4,382 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OMNA People</title>
+
 <style>
-:root { --fg:#1a1a1a; --muted:#6b6a65; --line:#dedbd2; --head:#f4f2ed; --blue:#2f74d0; --blue-bg:#e6eefb; }
-* { box-sizing: border-box; }
-body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--fg); background: #fff; max-width: 860px; margin: 0 auto; padding: 32px 20px 72px; line-height: 1.6; font-size: 16px; }
-h1, h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; line-height: 1.2; }
-h1 { font-size: 2.3rem; margin: 0 0 8px; }
-h2 { font-size: 1.6rem; margin: 48px 0 12px; }
-p { margin: 0 0 12px; }
-.lead { font-size: 1.05rem; }
-.muted, .note, .caption { color: var(--muted); }
-.note { font-size: .92rem; } .caption { font-size: .88rem; margin-top: 8px; }
-a { color: var(--blue); }
-.badge { display: inline-block; padding: 4px 12px; border-radius: 999px; background: #eee; font-size: .9rem; }
-.badge.on { background: #d7f5e3; } .badge.off { background: #fde2e2; }
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
-.card { display: block; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; color: inherit; text-decoration: none; background: #fff; }
-.card strong { display: block; } .card span { color: var(--muted); font-size: .92rem; }
-.card:hover { border-color: var(--blue); }
-#msgs { border: 1px solid var(--line); border-radius: 10px; padding: 12px; min-height: 160px; max-height: 360px; overflow-y: auto; }
-.me { text-align: right; margin: 6px 0; } .bot { margin: 6px 0; white-space: pre-wrap; }
-.askrow { display: flex; gap: 8px; margin-top: 8px; }
-#q { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; color: var(--fg); background: #fff; }
-button, a.btn { padding: 10px 18px; border: 0; border-radius: 8px; background: var(--blue); color: #fff; font: inherit; cursor: pointer; text-decoration: none; display: inline-block; }
-a.disabled { pointer-events: none; opacity: .5; }
-.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; }
-.tablewrap { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; font-size: .95rem; }
-th, td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
-th { background: var(--head); font-weight: 400; color: var(--muted); }
-.diagram-title { font-weight: 600; font-size: .95rem; margin: 28px 0 12px; }
-.flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.node { border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; text-align: center; background: #fff; min-width: 120px; }
-.node b { display: block; font-size: .92rem; } .node small { color: var(--muted); font-size: .8rem; }
-.node.main { border-color: var(--blue); background: var(--blue-bg); }
-.arrow { color: #a7a59d; }
-.flow-label { font-size: .8rem; color: var(--muted); margin: 0 0 4px; }
-.services { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
-@media (max-width: 640px) { .flow { flex-direction: column; align-items: stretch; } .arrow { text-align: center; transform: rotate(90deg); } }
-ul.files { padding-left: 20px; }
+  :root {
+    --n8n-orange: #ff6d5a;
+    --n8n-orange-dark: #e85b49;
+    --n8n-dark: #101010;
+    --n8n-dark-2: #161616;
+    --n8n-dark-3: #1f1f1f;
+    --n8n-border: #303030;
+    --n8n-text: #f5f5f5;
+    --n8n-muted: #a7a7a7;
+    --n8n-green: #35c759;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 20px;
+    background:
+      radial-gradient(circle at top, rgba(255, 109, 90, 0.08), transparent 35%),
+      var(--n8n-dark);
+    color: var(--n8n-text);
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: linear-gradient(to bottom, black, transparent 80%);
+  }
+
+  h1 {
+    font-size: 42px;
+    line-height: 1.1;
+    margin: 0 0 12px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: #fff;
+  }
+
+  h1::first-letter {
+    color: var(--n8n-orange);
+  }
+
+  p {
+    color: var(--n8n-muted);
+    line-height: 1.6;
+    margin-top: 0;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--n8n-border);
+    color: var(--n8n-muted);
+    font-size: 13px;
+    font-weight: 600;
+    margin: 8px 0 42px;
+  }
+
+  .badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #888;
+    box-shadow: 0 0 8px rgba(136, 136, 136, 0.5);
+  }
+
+  .badge.on {
+    background: rgba(53, 199, 89, 0.1);
+    border-color: rgba(53, 199, 89, 0.35);
+    color: #7be495;
+  }
+
+  .badge.on::before {
+    background: var(--n8n-green);
+    box-shadow: 0 0 10px rgba(53, 199, 89, 0.7);
+  }
+
+  .badge.off {
+    background: rgba(255, 109, 90, 0.1);
+    border-color: rgba(255, 109, 90, 0.35);
+    color: #ff9b8d;
+  }
+
+  .badge.off::before {
+    background: var(--n8n-orange);
+    box-shadow: 0 0 10px rgba(255, 109, 90, 0.7);
+  }
+
+  h2 {
+    font-size: 20px;
+    margin: 0 0 14px;
+    color: #fff;
+    font-weight: 650;
+  }
+
+  #msgs {
+    border: 1px solid var(--n8n-border);
+    border-radius: 16px;
+    padding: 18px;
+    min-height: 160px;
+    background: var(--n8n-dark-2);
+    box-shadow:
+      0 10px 40px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    margin-bottom: 14px;
+  }
+
+  .me {
+    text-align: right;
+    margin: 8px 0;
+    padding: 10px 14px;
+    margin-left: auto;
+    max-width: 75%;
+    width: fit-content;
+    border-radius: 14px 14px 4px 14px;
+    background: var(--n8n-orange);
+    color: #fff;
+    font-size: 14px;
+    box-shadow: 0 5px 18px rgba(255, 109, 90, 0.18);
+  }
+
+  .bot {
+    margin: 8px 0;
+    padding: 11px 14px;
+    max-width: 85%;
+    width: fit-content;
+    border-radius: 14px 14px 14px 4px;
+    background: var(--n8n-dark-3);
+    border: 1px solid var(--n8n-border);
+    color: #e8e8e8;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    font-size: 14px;
+  }
+
+  #ask {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 48px;
+  }
+
+  #q {
+    flex: 1;
+    min-width: 0;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--n8n-border);
+    background: var(--n8n-dark-2);
+    color: #fff;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  #q::placeholder {
+    color: #777;
+  }
+
+  #q:focus {
+    border-color: var(--n8n-orange);
+    box-shadow: 0 0 0 3px rgba(255, 109, 90, 0.12);
+  }
+
+  #ask button {
+    padding: 0 22px;
+    border: none;
+    border-radius: 10px;
+    background: var(--n8n-orange);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 5px 20px rgba(255, 109, 90, 0.18);
+  }
+
+  #ask button:hover {
+    background: var(--n8n-orange-dark);
+    box-shadow: 0 7px 25px rgba(255, 109, 90, 0.28);
+    transform: translateY(-1px);
+  }
+
+  #ask button:active {
+    transform: translateY(0);
+  }
+
+  #applyLink,
+  #coachLink {
+    display: inline-flex;
+    align-items: center;
+    padding: 13px 18px;
+    margin-top: 4px;
+    border: 1px solid var(--n8n-border);
+    border-radius: 10px;
+    background: var(--n8n-dark-2);
+    color: #f2f2f2;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 550;
+    transition:
+      border-color 0.2s,
+      background 0.2s,
+      transform 0.15s;
+  }
+
+  #applyLink:hover,
+  #coachLink:hover {
+    border-color: var(--n8n-orange);
+    background: rgba(255, 109, 90, 0.07);
+    transform: translateY(-1px);
+  }
+
+  a.disabled {
+    pointer-events: none;
+    opacity: .5;
+  }
+
+  @media (max-width: 600px) {
+    body {
+      padding: 32px 16px;
+    }
+
+    h1 {
+      font-size: 34px;
+    }
+
+    #ask {
+      flex-direction: column;
+    }
+
+    #ask button {
+      min-height: 46px;
+    }
+
+    .me,
+    .bot {
+      max-width: 90%;
+    }
+
+    #applyLink,
+    #coachLink {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 </style>
 </head>
+
 <body>
 
 <h1>OMNA People</h1>
-<p class="lead">An HR system that helps candidates apply and get CV coaching, and helps employees get answers from the company’s policies. Built with n8n, Gemini and Groq.</p>
+<p>Ask HR, get interview coaching, and apply. Built with n8n.</p>
 <span class="badge" id="status">Checking…</span>
 
-<h2>Choose what you want</h2>
-<div class="cards">
-  <a class="card" href="#ask"><strong>Ask HR</strong><span>Questions about leave, hours, benefits and expenses.</span></a>
-  <a class="card" href="#forms"><strong>Get coached</strong><span>Upload your CV and a job post, get a report by email.</span></a>
-  <a class="card" href="#forms"><strong>Apply</strong><span>Send your application with a PDF CV.</span></a>
-</div>
-
-<h2 id="ask">Ask HR</h2>
+<h2>Ask HR</h2>
 <div id="msgs"></div>
-<form id="ask-form"><div class="askrow">
+
+<form id="ask">
   <input id="q" placeholder="How many leave days do I get?" required>
-  <button>Ask</button></div></form>
-<p class="caption">The assistant answers only from the company’s policy documents and names the policy it used. You can write in English or Arabic.</p>
+  <button>Ask</button>
+</form>
 
-<h2 id="forms">Apply or get coached</h2>
-<div class="actions">
-  <a class="btn" id="applyLink" target="_blank" rel="noopener">Apply for a job</a>
-  <a class="btn" id="coachLink" target="_blank" rel="noopener">Get a coaching report</a>
-</div>
-<p class="caption">The first time, a notice from ngrok may appear. Click “Visit Site” to continue. Every submission runs the real workflows.</p>
-
-<h2>How it works</h2>
-<div class="tablewrap"><table>
-  <tr><th>Workflow</th><th>Trigger</th><th>What it does</th></tr>
-  <tr><td>1. Recruitment 1 - Intake Form</td><td>Form</td><td>Candidates apply with a PDF CV; it is validated, duplicates are caught, the CV is saved to Drive and the application is logged to a sheet</td></tr>
-  <tr><td>2. Recruitment 2 - AI Screening</td><td>Every hour</td><td>Reads new applications, scores each CV with AI, emails invites or declines, and sends borderline cases to HR</td></tr>
-  <tr><td>3. Recruitment 3 - Error Handler</td><td>Error + schedules</td><td>Logs failures, emails alerts, sends a daily digest, checks the queue is moving</td></tr>
-  <tr><td>4. Job Application Coach</td><td>Form</td><td>Reads a CV against a job post and emails a coaching report</td></tr>
-  <tr><td>5. RAG HR assistant</td><td>Chat, n8n start, daily, manual</td><td>Loads the policy documents from Google Drive and answers only from them</td></tr>
-</table></div>
-
-<p class="diagram-title">Visitors reach your real n8n only through the fixed ngrok address</p>
-<p class="flow-label">every request</p>
-<div class="flow">
-  <div class="node"><b>Visitor</b><small>browser or phone</small></div><span class="arrow">→</span>
-  <div class="node"><b>Project website</b><small>GitHub Pages</small></div><span class="arrow">→</span>
-  <div class="node"><b>ngrok address</b><small>fixed https URL</small></div><span class="arrow">→</span>
-  <div class="node main"><b>Your n8n (Docker)</b><small>workflows + credentials</small></div>
-</div>
-<div class="services">
-  <div class="node"><b>Google Workspace</b><small>Sheets, Drive, Gmail</small></div>
-  <div class="node"><b>AI models</b><small>Groq, Gemini (free tiers)</small></div>
-</div>
-<p class="caption">project architecture · website, ngrok, n8n and services</p>
-<p class="note">The system is live only while the host computer, Docker, n8n and ngrok are running. When they are off, the badge shows Offline and the form buttons are disabled.</p>
-
-<h2>Download</h2>
-<ul class="files">
-  <li><a href="workflows/recruitment-1-intake.json">recruitment-1-intake.json</a></li>
-  <li><a href="workflows/recruitment-2-ai-screening.json">recruitment-2-ai-screening.json</a></li>
-  <li><a href="workflows/recruitment-3-error-handler.json">recruitment-3-error-handler.json</a></li>
-  <li><a href="workflows/job-application-coach.json">job-application-coach.json</a></li>
-  <li><a href="workflows/rag-hr-assistant.json">rag-hr-assistant.json</a></li>
-</ul>
-<p class="note">Credentials and IDs are removed. Import each file into n8n and connect your own accounts.</p>
+<h2>Apply or get coached</h2>
+<p>
+  <a id="applyLink" target="_blank" rel="noopener">Apply for a job</a>
+  ·
+  <a id="coachLink" target="_blank" rel="noopener">Get a coaching report</a>
+</p>
 
 <script>
 const CONFIG = {
-  n8nBase: "https://unscathed-trouble-pavilion.ngrok-free.dev",
-  chat: "/webhook/0b66ed32-d0ff-457c-97c6-39809708345d/chat",
-  applyForm: "/form/a4ca2dc9-0275-42f8-aa36-5e30f56682a3",
-  coachForm: "/form/67203ed5-7294-49e7-aee8-ee6e20224c0b"
+    n8nBase: "https://YOUR-DOMAIN.ngrok-free.app",
+    chat: "/webhook/YOUR-CHAT-ID/chat",
+    applyForm: "/form/YOUR-APPLY-FORM-ID",
+    coachForm: "/form/YOUR-COACH-FORM-ID"
 };
+
 const $ = s => document.querySelector(s);
 const sessionId = crypto.randomUUID();
-const HEADERS = { "Content-Type": "application/json", "ngrok-skip-browser-warning": "1" };
+
+const HEADERS = {
+  "Content-Type": "application/json",
+  "ngrok-skip-browser-warning": "1"
+};
+
 $("#applyLink").href = CONFIG.n8nBase + CONFIG.applyForm;
 $("#coachLink").href = CONFIG.n8nBase + CONFIG.coachForm;
 
 function setStatus(online) {
-  $("#status").textContent = online ? "Online" : "Offline";
+  $("#status").textContent = online ? "Online" : "Offline, please try again later";
   $("#status").className = "badge " + (online ? "on" : "off");
-  document.querySelectorAll("#applyLink, #coachLink").forEach(a => a.classList.toggle("disabled", !online));
+
+  document.querySelectorAll("#applyLink, #coachLink").forEach(a =>
+    a.classList.toggle("disabled", !online)
+  );
 }
 
 // Any answer from the chat webhook means n8n and ngrok are both running.
 // When either is off, ngrok's error page has no CORS headers, so fetch fails.
 async function checkStatus() {
   try {
-    await fetch(CONFIG.n8nBase + CONFIG.chat, { method: "POST", headers: HEADERS,
-      body: JSON.stringify({ action: "loadPreviousSession", sessionId }) });
+    await fetch(CONFIG.n8nBase + CONFIG.chat, {
+      method: "POST",
+      headers: HEADERS,
+      body: JSON.stringify({
+        action: "loadPreviousSession",
+        sessionId
+      })
+    });
+
     setStatus(true);
-  } catch (err) { setStatus(false); }
+  } catch (err) {
+    setStatus(false);
+  }
 }
+
 checkStatus();
 
 function add(cls, text) {
-  const d = document.createElement("div"); d.className = cls; d.textContent = text;
-  $("#msgs").append(d); $("#msgs").scrollTop = $("#msgs").scrollHeight; return d;
+  const d = document.createElement("div");
+  d.className = cls;
+  d.textContent = text;
+  $("#msgs").append(d);
+  return d;
 }
 
-$("#ask-form").onsubmit = async e => {
+$("#ask").onsubmit = async e => {
   e.preventDefault();
-  const q = $("#q").value.trim(); if (!q) return;
-  $("#q").value = ""; add("me", q);
+
+  const q = $("#q").value.trim();
+  $("#q").value = "";
+
+  add("me", q);
+
   const bot = add("bot", "…");
+
   try {
-    const r = await fetch(CONFIG.n8nBase + CONFIG.chat, { method: "POST", headers: HEADERS,
-      body: JSON.stringify({ action: "sendMessage", sessionId, chatInput: q }) });
+    const r = await fetch(CONFIG.n8nBase + CONFIG.chat, {
+      method: "POST",
+      headers: HEADERS,
+      body: JSON.stringify({
+        action: "sendMessage",
+        sessionId,
+        chatInput: q
+      })
+    });
+
     if (!r.ok) throw new Error("HTTP " + r.status);
+
     bot.textContent = (await r.json()).output;
     setStatus(true);
+
   } catch (err) {
     bot.textContent = "The HR assistant is offline right now. Please try again later.";
     setStatus(false);
   }
 };
 </script>
+
 </body>
 </html>
