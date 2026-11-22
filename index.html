@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OMNA People</title>
+<style>
+:root { --bg:#ffffff; --fg:#1d1d1f; --muted:#5f6368; --card:#f5f5f7; --line:#dcdce0; --accent:#2457d6; --on:#d7f5e3; --off:#fde2e2; }
+@media (prefers-color-scheme: dark) { :root { --bg:#16181d; --fg:#ececf0; --muted:#a0a4ad; --card:#1f2229; --line:#33373f; --accent:#7aa2ff; --on:#173d28; --off:#4a2020; } }
+* { box-sizing: border-box; }
+body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--fg); max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; line-height: 1.55; }
+h1 { font-size: 2rem; margin: 0 0 4px; } h2 { margin-top: 40px; }
+p.lead { color: var(--muted); margin: 0 0 12px; }
+.badge { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--card); font-size: .9rem; }
+.badge.on { background: var(--on); } .badge.off { background: var(--off); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.card { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; color: inherit; text-decoration: none; }
+.card strong { display: block; margin-bottom: 4px; } .card span { color: var(--muted); font-size: .92rem; }
+.card:hover { border-color: var(--accent); }
+#msgs { border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-height: 160px; max-height: 360px; overflow-y: auto; background: var(--card); }
+.me { text-align: right; margin: 6px 0; } .bot { margin: 6px 0; white-space: pre-wrap; }
+.askrow { display: flex; gap: 8px; margin-top: 8px; }
+#q { flex: 1; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); font: inherit; }
+button, a.btn { padding: 10px 16px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font: inherit; cursor: pointer; text-decoration: none; display: inline-block; }
+@media (prefers-color-scheme: dark) { button, a.btn { color: #101218; } }
+a.disabled { pointer-events: none; opacity: .5; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.note { color: var(--muted); font-size: .9rem; }
+ol.steps { padding-left: 20px; } ol.steps li { margin-bottom: 10px; }
+ul.files { padding-left: 20px; } a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<h1>OMNA People</h1>
+<p class="lead">An HR system that helps candidates apply and get CV coaching, and helps employees get answers from the company’s policies. Built with n8n, Gemini and Groq.</p>
+<span class="badge" id="status">Checking…</span>
+
+<h2>Choose what you want</h2>
+<div class="cards">
+  <a class="card" href="#ask"><strong>Ask HR</strong><span>Questions about leave, hours, benefits and expenses.</span></a>
+  <a class="card" href="#forms"><strong>Get coached</strong><span>Upload your CV and a job post, get a report by email.</span></a>
+  <a class="card" href="#forms"><strong>Apply</strong><span>Send your application with a PDF CV.</span></a>
+</div>
+
+<h2 id="ask">Ask HR</h2>
+<div id="msgs"></div>
+<form id="ask-form"><div class="askrow">
+  <input id="q" placeholder="How many leave days do I get?" required>
+  <button>Ask</button></div></form>
+<p class="note">The assistant answers only from the company’s policy documents and names the policy it used. You can write in English or Arabic.</p>
+
+<h2 id="forms">Apply or get coached</h2>
+<div class="actions">
+  <a class="btn" id="applyLink" target="_blank" rel="noopener">Apply for a job</a>
+  <a class="btn" id="coachLink" target="_blank" rel="noopener">Get a coaching report</a>
+</div>
+<p class="note">The first time, a notice from ngrok may appear. Click “Visit Site” to continue. Every submission runs the real workflows.</p>
+
+<h2>How it works</h2>
+<ol class="steps">
+  <li><strong>Recruitment 1, intake form.</strong> A candidate applies with a PDF CV. The form is validated, duplicates are caught, the CV is saved to Google Drive and the application is logged in a Google Sheet.</li>
+  <li><strong>Recruitment 2, AI screening.</strong> Every hour it reads new applications, scores each CV with AI, then emails an invitation or a decline. Borderline cases are sent to HR for review.</li>
+  <li><strong>Recruitment 3, error handler.</strong> Logs failures, emails alerts, sends a daily digest and checks that the queue keeps moving.</li>
+  <li><strong>Job Application Coach.</strong> Reads a CV against a job post and emails a coaching report with a CV match, a cover letter and interview preparation.</li>
+  <li><strong>RAG HR assistant.</strong> Loads the policy documents from Google Drive at start-up and every morning at 7:00. It answers questions only from those documents.</li>
+</ol>
+<p class="note">The system is live only while the host computer, Docker, n8n and ngrok are running. When they are off, the badge shows Offline and the form buttons are disabled.</p>
+
+<h2>Download</h2>
+<ul class="files">
+  <li><a href="workflows/recruitment-1-intake.json">recruitment-1-intake.json</a></li>
+  <li><a href="workflows/recruitment-2-ai-screening.json">recruitment-2-ai-screening.json</a></li>
+  <li><a href="workflows/recruitment-3-error-handler.json">recruitment-3-error-handler.json</a></li>
+  <li><a href="workflows/job-application-coach.json">job-application-coach.json</a></li>
+  <li><a href="workflows/rag-hr-assistant.json">rag-hr-assistant.json</a></li>
+</ul>
+<p class="note">Credentials and IDs are removed. Import each file into n8n and connect your own accounts.</p>
+
+<script>
+const CONFIG = {
+  n8nBase: "https://unscathed-trouble-pavilion.ngrok-free.dev",
+  chat: "/webhook/0b66ed32-d0ff-457c-97c6-39809708345d/chat",
+  applyForm: "/form/a4ca2dc9-0275-42f8-aa36-5e30f56682a3",
+  coachForm: "/form/67203ed5-7294-49e7-aee8-ee6e20224c0b"
+};
+const $ = s => document.querySelector(s);
+const sessionId = crypto.randomUUID();
+const HEADERS = { "Content-Type": "application/json", "ngrok-skip-browser-warning": "1" };
+$("#applyLink").href = CONFIG.n8nBase + CONFIG.applyForm;
+$("#coachLink").href = CONFIG.n8nBase + CONFIG.coachForm;
+
+function setStatus(online) {
+  $("#status").textContent = online ? "Online" : "Offline, please try again later";
+  $("#status").className = "badge " + (online ? "on" : "off");
+  document.querySelectorAll("#applyLink, #coachLink").forEach(a => a.classList.toggle("disabled", !online));
+}
+
+// Any answer from the chat webhook means n8n and ngrok are both running.
+// When either is off, ngrok's error page has no CORS headers, so fetch fails.
+async function checkStatus() {
+  try {
+    await fetch(CONFIG.n8nBase + CONFIG.chat, { method: "POST", headers: HEADERS,
+      body: JSON.stringify({ action: "loadPreviousSession", sessionId }) });
+    setStatus(true);
+  } catch (err) { setStatus(false); }
+}
+checkStatus();
+
+function add(cls, text) {
+  const d = document.createElement("div"); d.className = cls; d.textContent = text;
+  $("#msgs").append(d); $("#msgs").scrollTop = $("#msgs").scrollHeight; return d;
+}
+
+$("#ask-form").onsubmit = async e => {
+  e.preventDefault();
+  const q = $("#q").value.trim(); if (!q) return;
+  $("#q").value = ""; add("me", q);
+  const bot = add("bot", "…");
+  try {
+    const r = await fetch(CONFIG.n8nBase + CONFIG.chat, { method: "POST", headers: HEADERS,
+      body: JSON.stringify({ action: "sendMessage", sessionId, chatInput: q }) });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    bot.textContent = (await r.json()).output;
+    setStatus(true);
+  } catch (err) {
+    bot.textContent = "The HR assistant is offline right now. Please try again later.";
+    setStatus(false);
+  }
+};
+</script>
+</body>
+</html>
